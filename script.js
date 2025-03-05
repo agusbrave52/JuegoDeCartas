@@ -1,6 +1,7 @@
 let cartasMano1 = [];
 let cartasMano2 = [];
-let cartasPantalla = [];
+let cartasPantallaMano1 = [];
+let cartasPantallaMano2 = [];
 let cantidad = 0;
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -16,7 +17,7 @@ function ObtenerCarta(mano){
         { facingMode: "environment" }, // Usa la cámara trasera
         {
             fps: 30, // Cuadros por segundo
-            qrbox: { width: 250, height: 250 } // Área del QR
+            qrbox: { width: 500, height: 500 } // Área del QR
         },
         async (decodedText) => {
             console.log("QR detectado:", decodedText);
@@ -61,13 +62,14 @@ function AgregarCartaPantalla(mano, carta){
 
     const nuevaCarta = document.createElement("div");
     nuevaCarta.classList.add("card", "d-flex");
-    nuevaCarta.setAttribute("value", carta.id);
+    nuevaCarta.setAttribute("name", carta.id);
     if(mano == 1){
         nuevaCarta.classList.add("text-bg-primary");
     }
     else{
         nuevaCarta.classList.add("text-bg-warning");
     }
+    nuevaCarta.id = "carta-" + carta.id;
     const cuerpoCarta = document.createElement("div");
     cuerpoCarta.classList.add("card-body");
     const tituloCarta = document.createElement("h5");
@@ -92,6 +94,7 @@ function AgregarCartaPantalla(mano, carta){
     botonEliminar.classList.add("btn" , "btn-danger");
     botonEliminar.addEventListener("click", () => {
         nuevaCarta.remove();
+        EliminarCarta(carta.id, mano);
     });
 
     //atacar
@@ -100,6 +103,7 @@ function AgregarCartaPantalla(mano, carta){
     botonAtacar.classList.add("btn", "btn-secondary");
     botonAtacar.addEventListener("click", () => {
         console.log("atacaaaaaa");
+        AtacarClick(mano);
     });
 
     //armar carta
@@ -110,23 +114,108 @@ function AgregarCartaPantalla(mano, carta){
     footer.appendChild(botonEliminar);
     footer.appendChild(botonAtacar);
 
-    cartasPantalla.push(nuevaCarta);
+    if(mano == 1){
+        cartasPantallaMano1.push(nuevaCarta);
+    }
+    else{
+        cartasPantallaMano2.push(nuevaCarta);
+    }
     MostrarCartas();
 }
 
 function MostrarCartas(){
 
-    for(let i = 0; i < cartasPantalla.length; i++){
-        if(cartasPantalla[i].classList.contains("text-bg-primary")){
-            document.getElementById("mano1").appendChild(cartasPantalla[i]);
-        }
-        else{
-            document.getElementById("mano2").appendChild(cartasPantalla[i]);
-        }
+    for(let i = 0; i < cartasPantallaMano1.length; i++){
+        document.getElementById("mano1").appendChild(cartasPantallaMano1[i]);
+    }
+    for(let i = 0; i < cartasPantallaMano2.length; i++){
+        document.getElementById("mano2").appendChild(cartasPantallaMano2[i]);
     }
 }
-function AtacarCarta(carta){
+
+function AtacarClick(mano){
     
+    if(mano == 1){
+        // let cartas = document.getElementsByClassName("text-bg-warning");
+        for(let i = 0; i < cartasPantallaMano2.length; i++){
+            cartasPantallaMano2[i].style = "border: solid 4px; border-color: rgb(255, 0, 0)";
+            //lo pongo en la carta
+            let botonSeleccionar = document.createElement("button");
+            botonSeleccionar.textContent = "Seleccionar"
+            botonSeleccionar.classList.add("btn", "btn-light", "seleccionar2");
+
+            let boton = cartasPantallaMano2[i]?.querySelector(".seleccionar2");
+            
+             // true si hay al menos un botón con la clase "seleccionar1"
+            if(!boton){
+                cartasPantallaMano2[i].appendChild(botonSeleccionar);
+            }
+        }
+        let botonesMano1 = document.getElementsByClassName("seleccionar1");
+        if(botonesMano1.length != 0){
+            const cantBotones = botonesMano1.length;
+            for(let i = cantBotones-1; i >= 0; i--){
+                botonesMano1[i].remove();
+                cartasPantallaMano1[i].style = "";
+            }
+        }
+    }
+    else{
+        // let cartas = document.getElementsByClassName("text-bg-primary");
+        for(let i = 0; i < cartasPantallaMano1.length; i++){
+            cartasPantallaMano1[i].style = "border: solid 4px; border-color: rgb(255, 0, 0)";
+            //lo pongo en la carta
+            let botonSeleccionar = document.createElement("button");
+            botonSeleccionar.textContent = "Seleccionar"
+            botonSeleccionar.classList.add("btn", "btn-light", "seleccionar1");
+
+            let boton = cartasPantallaMano1[i]?.querySelector(".seleccionar1");
+            
+            
+             // true si hay al menos un botón con la clase "seleccionar1"
+            if(!boton){
+                cartasPantallaMano1[i].appendChild(botonSeleccionar);
+            }
+        }
+        let botonesMano2 = document.getElementsByClassName("seleccionar2");
+        if(botonesMano2.length != 0){
+            const cantBotones = botonesMano2.length;
+            for(let i = cantBotones -1; i >= 0; i--){
+                botonesMano2[i].remove();
+                cartasPantallaMano2[i].style = "";
+            }
+        }
+    }
+    //crear boton para cancelar
+    if(!document.getElementById("cancelar")){
+        const botonCancelar = document.createElement("button");
+        botonCancelar.textContent = "Cancelar";
+        botonCancelar.classList.add("btn", "btn-secondary");
+        botonCancelar.id = "cancelar";
+        document.getElementById("primeraLinea").appendChild(botonCancelar);
+    }
+}
+
+function EliminarCarta(cartaI, mano){
+/*     console.log("cartas antes de eliminar");
+    console.log(cartasMano2);
+    console.log(cartasMano1);
+    console.log(cartasPantallaMano1);
+    console.log(cartasPantallaMano2); */
+    if(mano == 1){
+        const i = cartasMano1.findIndex(cart => cart.id === cartaI);
+        if(0 !== -1){
+            cartasMano1.splice(i, 1);
+        }
+        cartasPantallaMano1.splice(i,1);
+    }
+    else{
+        const i = cartasMano2.findIndex(cart => cart.id === cartaI);
+        if(0 !== -1){
+            cartasMano2.splice(i, 1);
+        }
+        cartasPantallaMano2.splice(i,1);
+    }
 }
 
 
