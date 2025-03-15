@@ -103,7 +103,7 @@ function AgregarCartaPantalla(mano, carta){
     botonAtacar.classList.add("btn", "btn-secondary");
     botonAtacar.addEventListener("click", () => {
         console.log("atacaaaaaa");
-        AtacarClick(mano);
+        AtacarClick(mano, carta.id);
     });
 
     //armar carta
@@ -133,7 +133,7 @@ function MostrarCartas(){
     }
 }
 
-function AtacarClick(mano){
+function AtacarClick(mano, carta){
     
     if(mano == 1){
         // let cartas = document.getElementsByClassName("text-bg-warning");
@@ -143,6 +143,7 @@ function AtacarClick(mano){
             let botonSeleccionar = document.createElement("button");
             botonSeleccionar.textContent = "Seleccionar"
             botonSeleccionar.classList.add("btn", "btn-light", "seleccionar2");
+            botonSeleccionar.addEventListener("click", () =>{Atacar(cartasMano2[i])});
 
             let boton = cartasPantallaMano2[i]?.querySelector(".seleccionar2");
             
@@ -159,6 +160,7 @@ function AtacarClick(mano){
                 cartasPantallaMano1[i].style = "";
             }
         }
+        localStorage.setItem("cartaAtacante", carta);
     }
     else{
         // let cartas = document.getElementsByClassName("text-bg-primary");
@@ -168,6 +170,7 @@ function AtacarClick(mano){
             let botonSeleccionar = document.createElement("button");
             botonSeleccionar.textContent = "Seleccionar"
             botonSeleccionar.classList.add("btn", "btn-light", "seleccionar1");
+            botonSeleccionar.addEventListener("click", () =>{Atacar(cartasMano1[i])});
 
             let boton = cartasPantallaMano1[i]?.querySelector(".seleccionar1");
             
@@ -192,6 +195,7 @@ function AtacarClick(mano){
         botonCancelar.textContent = "Cancelar";
         botonCancelar.classList.add("btn", "btn-secondary");
         botonCancelar.id = "cancelar";
+        botonCancelar.addEventListener("click", () => {CancelarBoton()});
         document.getElementById("primeraLinea").appendChild(botonCancelar);
     }
 }
@@ -216,6 +220,30 @@ function EliminarCarta(cartaI, mano){
         }
         cartasPantallaMano2.splice(i,1);
     }
+}
+
+function CancelarBoton(){
+    let botonesMano1 = document.getElementsByClassName("seleccionar1");
+    if(botonesMano1.length != 0){
+        const cantBotones = botonesMano1.length;
+        for(let i = cantBotones-1; i >= 0; i--){
+            botonesMano1[i].remove();
+            cartasPantallaMano1[i].style = "";
+        }
+    }
+    let botonesMano2 = document.getElementsByClassName("seleccionar2");
+    if(botonesMano2.length != 0){
+        const cantBotones = botonesMano2.length;
+        for(let i = cantBotones -1; i >= 0; i--){
+            botonesMano2[i].remove();
+            cartasPantallaMano2[i].style = "";
+        }
+    }
+    document.getElementById("cancelar").remove();
+}
+
+function Atacar(carta){
+    
 }
 
 
